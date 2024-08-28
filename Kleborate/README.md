@@ -73,8 +73,8 @@ cd ~
 echo "export PATH="$PATH:/home/chrisow/Kleborate"" >> .bashrc
 ```
 
-##Exit and re-login
-# OR
+### Exit and re-login
+## OR
 ```sudo source .bashrc```
 
 ## 8. Rename Script with Version Attached
