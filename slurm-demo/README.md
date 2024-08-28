@@ -64,27 +64,69 @@ We are good to go!
     [@node103:~] $ srun hostname
     node1
 
-> **From here I will leave out the `[@node103:~] $` prompt for easier cut & paste**
-
 If you go through Slurm's getting started, this is what they show first:
 
-    srun -n4 hostname
+    [@node103:~] $ srun -n 4 hostname
     node1
     node1
     node1
     node1
+
+In Slurm terminology this one **job** executes 4 **tasks**.  All tasks (in this
+case) run on `node1`.
+
+Then they show you this feature:
+
+    [@node103:~] $ srun -N 4 hostname
+    node3
+    node1
+    node2
+    node4
+
+So the `-N4` param requests one task per **node**, whereas this:
+
+    [@node103:~] $ srun -n 4 -N 2-3 hostname
+    node3
+    node1
+    node1
+    node2
+
+Requests four tasks to run, using at least 2 and at most 3 nodes.
+
+> You may now wonder why anyone would want to run the same thing
+> four times (in parallel).  Very good point, we will get to that.
+
+First, two more enlightening examples:
+
+    [@node103:~] $ srun -N 5 hostname
+    srun: Requested partition configuration not available now
+    srun: job 51 queued and waiting for resources
+    ^C
+
+Aha! Slurm replies that right now, there are not a mininum of 5 nodes.
+
+How about asking for more tasks than any single node has CPUs (72):
+
+    [@node103:~] $ srun -n 100 hostname | sort | uniq -c
+    72 node1
+    28 node2
+
+OK, so Slurm will spread the tasks over the CPUs across the nodes!
 
 
 ## Using `salloc`
 
-You could 
+@TODO@
 
 ## Using `sbatch`
 
+@TODO@
 
 ### Job Arrays
 
+@TODO@
 
 ### Workflow Support
 
+@TODO@
 
