@@ -15,7 +15,8 @@ We have:
  * Worker nodes `node1..4` (`.noguchi.hpc` -> internal DNS domain, known within the cluster only)
  * Controller node (but you won't notice) `node3`
 
-All nodes share the `/hpc` and `/home` directories.
+All nodes share the `/hpc` and `/home` directories.  We have a single Slurm
+partition (queue to submit work to), called `global`.
 
 When working on the cluster, remember to **always**:
 
@@ -42,12 +43,16 @@ For the example sessions below, login on an entry node of your choice, then `kin
     # Recommended to work in a screen or tmux session
     [@node103:~] $ screen    # to later recover your session: screen -DRRU
 
-Note that Slurm has very complete `man` pages, e.g. for an overview:
+> **Sideline** to get that special coloured prompt, I use LiquidPrompt.
+> Use `liquidprompt_activate` to set it in your `~/.bashrc`.  Turn on
+> and off with `liquidprompt_{on,off}`.
+
+Note that Slurm has very comprehensive `man` pages, e.g. for an overview:
 
     [@node103:~] $ man slurm
     ...
 
-    # And of course commands have help as well
+    # And its commands have built-in help as expected
     srun --help
 
 We are good to go!
@@ -126,7 +131,7 @@ have 72):
 OK, so Slurm will spread the tasks over the CPUs across the nodes,
 assigning a CPU per task.
 
-### Why run the exact same thing four times?
+#### Why run the exact same thing four times?
 
 Two answers:
 
@@ -155,7 +160,9 @@ Two answers:
 > For now, remember that a CPU is the lowest level (and we have 72 per node)
 > but colloquially we often call that a core.
 
-### Always request CPUs
+### Guidelines for `srun`, `salloc` and `sbatch`
+
+#### Always request CPUs
 
 Whenever you use `srun` (or `salloc` or `sbatch`), always specify the
 number of CPUs you are requesting from Slurm:
@@ -171,7 +178,7 @@ likely give you optimal performance.  In fact, this ...
 
 ... may result in Slurm terminating your job for going over its allocation.
 
-### (Almost) always also request memory
+#### (Almost) always also request memory
 
 The default setting on the HPC is to request 4GB memory for every core you
 request.  So this Flye command:
@@ -184,14 +191,79 @@ will run with 32GB of memory rather than the default 4x4 = 16GB.
 **Be nice to others and request what you need** (else their jobs will be
 waiting for resources to become available).
 
-### (Future) request GPUs
+#### Optionally also request a time limit
+
+This is so Slurm knows when resources become available:
+
+    [@node103:~] $ srun -t 60 -c 4 --mem=32G flye -t 4 ...
+    
+This requests 60 minutes.
+
+#### (Future) request GPUs
 
 When the HPC gets GPUs, use `-G 1` to request use of a (single) GPU.
      
 
 ## Using `salloc`
 
-@TODO@
+Use `salloc` to create an interactive session (the `-n 4` is just for
+illustration):
+
+    [@node103:~] $ salloc
+    salloc: Granted job allocation 64
+    [@node103:~]└2 $ 
+
+Note that we are still on `node103`, however we have reserved an
+allocation:
+
+    [@node103:~]└2 $ sinfo
+    PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+    global*      up   infinite      1    mix node1
+    global*      up   infinite      3   idle node[2-4]
+
+    [@node103:~]└2 $ squeue
+    JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+        65    global interact    zwets  R       3:45      1 node1
+
+And can now execute `srun` commands that will _inherit_ our settings.
+So let's exit that session and specify what we will use:
+
+    [@node103:~]└2 $ exit
+    salloc: Relinquishing job allocation 64
+
+Let's ask for half an hour, 8 CPUs, 32GB memory
+    [@node103:~] $ salloc -t 30 -c 8 --mem 32G -n 4  # the -n4 just for demo
+    salloc: Granted job allocation 65
+    [@node103:~]└2 $ srun hostname
+    node1
+    node1
+    node1
+    node1
+
+This should prove to us that `srun` no longer needs its arguments,
+and executes with the 'inherited' settings.
+
+You can see this from our environment:
+
+    [@node103:~]└2 $ env | fgrep SLURM
+    SLURM_JOB_NUM_NODES=1
+    SLURM_JOB_NODELIST=node1
+    SLURM_NTASKS=4
+    SLURM_TASKS_PER_NODE=4
+    SLURM_JOB_CPUS_PER_NODE=32  <- Note: -c is PER TASK CPUs
+    SLURM_TRES_PER_TASK=cpu:8
+    SLURM_CPUS_PER_TASK=8
+    SLURM_MEM_PER_NODE=32768    <- Slurm default memory unit is MB
+    ...
+
+#### Why use `salloc` if we still need to `srun`?
+
+With `srun`, the resource request is made for every separate invocation,
+with `salloc`, you own the reservation for the duration of the session.
+
+**Important** therefore to exit your `salloc`, especially when you have
+a `screen/tmux` session!
+
 
 ## Using `sbatch`
 
@@ -205,3 +277,6 @@ When the HPC gets GPUs, use `-G 1` to request use of a (single) GPU.
 
 @TODO@
 
+### Container Support
+
+See the `--container` argument.  TBI.
