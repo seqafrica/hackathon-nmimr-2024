@@ -231,7 +231,8 @@ So let's exit that session and specify what we will use:
     [@node103:~]└2 $ exit
     salloc: Relinquishing job allocation 64
 
-Let's ask for half an hour, 8 CPUs, 32GB memory
+Let's ask for half an hour, 8 CPUs, 32GB memory:
+
     [@node103:~] $ salloc -t 30 -c 8 --mem 32G -n 4  # the -n4 just for demo
     salloc: Granted job allocation 65
     [@node103:~]└2 $ srun hostname
@@ -256,6 +257,16 @@ You can see this from our environment:
     SLURM_MEM_PER_NODE=32768    <- Slurm default memory unit is MB
     ...
 
+You can background `srun` jobs like any other program:
+
+    [@node103:~]└2 $ srun somecommand &
+    [1] 17995
+    [@node103:~]└2 $ do other things
+    ...
+    [1]+  Done                    somecommand
+
+But remember to remain within your resource allocation.
+
 #### Why use `salloc` if we still need to `srun`?
 
 With `srun`, the resource request is made for every separate invocation,
@@ -267,11 +278,75 @@ a `screen/tmux` session!
 
 ## Using `sbatch`
 
-@TODO@
+The `sbatch` command is for submitting _asynchronous_ jobs.
 
-### Job Arrays
+A job file is just any shell script.  For instance create `my.job`:
 
-@TODO@
+    #!/bin/sh
+    hostname
+    sleep 15s
+
+You may `chmod +x my.job` (but it is not necessary).  Then submit it:
+
+    [@node103:~] $ sbatch -c 1 --mem 1 my.job
+    Submitted batch job 70
+
+    [@node103:~] $ squeue
+      JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+         70    global   my.job    zwets  R       0:02      1 node1
+
+The job writes its stdout and stderr to file `slurm-${JOBID}.out`
+(you can direct them to other files with `-o` and `-e`):
+
+    [@node103:~] $ cat slurm-70.out
+    node1
+    
+Rather than pass command-line arguments to `sbatch`, put them in the job,
+for instance:
+
+    #!/bin/sh
+    #SBATCH -c 1 --mem 1 -n 4 -N 2
+    #SBATCH ... more options
+    hostname
+    sleep 15s
+
+Now we see:
+
+    [@node101:~] $ sbatch
+    Submitted batch job 73
+
+    [@node101:~] $ sinfo
+    PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+    global*      up   infinite      2    mix node[1-2]
+    global*      up   infinite      2   idle node[3-4]
+
+    [@node101:~] $ squeue
+      JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+         73    global  my2.job    zwets  R       0:10      2 node[1-2]
+
+Once done:
+
+    [@node101:~] $ cat slurm-73.out
+    node1
+    
+That's weird; I would expect to see `node1` _four times_.  My suspicion is
+that the four tasks overwrite each other.  But I'm no expert (yet).
+
+
+### Batching: Job Arrays
+
+Slurm does not have 'native' support for running `sbatch` over e.g. all
+the files in a directory.  However, it has the concept **batch arrays**:
+
+    [@node101:~] $ sbatch -a 1-10 my.job
+
+Or specify this in the job:
+
+    #!/bin/sh
+    #SBATCH --array 1-10 --mem 1 -c 1
+    hostname
+   
+TBD 
 
 ### Workflow Support
 
