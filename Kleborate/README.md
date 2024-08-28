@@ -1,3 +1,29 @@
+# Introduction
+
+This repository outlines the process used in setting up Kleborate on the Noguchi HPC and the output of the test run.
+
+**Kleborate** is a tool designed to screen genome assemblies of *Klebsiella pneumoniae* and the *Klebsiella pneumoniae* species complex (KpSC) for the following:
+
+- **MLST sequence type**
+- **Species identification** (e.g., *K. pneumoniae*, *K. quasipneumoniae*, *K. variicola*, etc.)
+- **ICEKp associated virulence loci**:
+  - Yersiniabactin (ybt)
+  - Colibactin (clb)
+  - Salmochelin (iro)
+  - Hypermucoidy (rmpA)
+- **Virulence plasmid associated loci**:
+  - Salmochelin (iro)
+  - Aerobactin (iuc)
+  - Hypermucoidy (rmpA, rmpA2)
+- **Antimicrobial resistance determinants**:
+  - Acquired genes
+  - SNPs
+  - Gene truncations
+  - Intrinsic β-lactamases
+- **K (capsule) and O antigen (LPS) serotype prediction**, via wzi alleles and Kaptive
+
+The original installation documents can be found on the [Kleborate GitHub Wiki](https://github.com/klebgenomics/Kleborate/wiki/Installation).
+
 # Kleborate Installation
 
 ## 1. Create Conda Environment
@@ -7,13 +33,13 @@
 ```conda activate kleborate```
 
 ## 3. Install Dependencies
-# Biopython v1.75 or later
+## Biopython v1.75 or later
 ```conda install conda-forge::biopython```
 
-# BLAST+ command line tools (v2.7.1 or later)
+## BLAST+ command line tools (v2.7.1 or later)
 ```conda install bioconda::blast```
 
-# Mash v2.0 or later
+## Mash v2.0 or later
 ```conda install bioconda::mash```
 
 ## 4. Verify Versions of Dependencies
