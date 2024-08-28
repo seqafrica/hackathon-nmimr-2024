@@ -33,13 +33,13 @@ The original installation documents can be found on the [Kleborate GitHub Wiki](
 ```conda activate kleborate```
 
 ## 3. Install Dependencies
- Biopython v1.75 or later
+###  Biopython v1.75 or later
 ```conda install conda-forge::biopython```
 
- BLAST+ command line tools (v2.7.1 or later)
+### BLAST+ command line tools (v2.7.1 or later)
 ```conda install bioconda::blast```
 
- Mash v2.0 or later
+### Mash v2.0 or later
 ```conda install bioconda::mash```
 
 ## 4. Verify Versions of Dependencies
