@@ -44,7 +44,7 @@ rm -f ../kleborate/data/Klebsiella_pneumoniae.fasta.n*
 ## 7. Make the PATH to kleborate-runner.py Global
 ```
 cd ~
-echo "export PATH=\"$PATH:/home/chrisow/Kleborate\"" >> .bashrc
+echo "export PATH="$PATH:/home/chrisow/Kleborate"" >> .bashrc
 ```
 
 ##Exit and re-login
