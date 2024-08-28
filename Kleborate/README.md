@@ -1,6 +1,6 @@
 # Introduction
 
-##This repository outlines the process used in setting up **Kleborate** on the **Noguchi HPC** and the output of the test run.
+## This repository outlines the process used in setting up **Kleborate** on the **Noguchi HPC** and the output of the test run.
 
 **Kleborate** is a tool designed to screen genome assemblies of *Klebsiella pneumoniae* and the *Klebsiella pneumoniae* species complex (KpSC) for the following:
 
