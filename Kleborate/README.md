@@ -73,7 +73,7 @@ cd ~
 echo "export PATH="$PATH:/home/chrisow/Kleborate"" >> .bashrc
 ```
 
-### Exit and re-login
+### Exit shell and re-login
 ## OR
 ```sudo source .bashrc```
 
