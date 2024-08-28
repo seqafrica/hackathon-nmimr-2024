@@ -22,7 +22,7 @@
   - Intrinsic β-lactamases
 - **K (capsule) and O antigen (LPS) serotype prediction**, via wzi alleles and Kaptive
 
-The original installation documents can be found on the [Kleborate GitHub Wiki](https://github.com/klebgenomics/Kleborate/wiki/Installation).
+The original installation documents can be found on [Kleborate GitHub Wiki](https://github.com/klebgenomics/Kleborate/wiki/Installation).
 
 # Kleborate Installation
 
