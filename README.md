@@ -37,12 +37,14 @@ Other demos:
  * **MIPtools** and **SeekDeep** (Makonk)
 
 
-## Open End & Follow-up
+## Open Ends & Follow-up
 
  * AMRomics error running Chris's samples
  * hAMRonize check ResFinder output (6 gene limit?)
  * Slurm open ends:
    - Simpler "horizontal batching" (iterate over inputs)
    - Workflow support in Slurm ("vertical batching")
-   - Container support
+   - Container support (Docker, singularity, ...)
+ * DNS registration of the hpc entry nodes inside UG
+ * Allow `hpcusers` login on entry nodes only
 
